@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SamEleven.App (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "SamEleven.App (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
