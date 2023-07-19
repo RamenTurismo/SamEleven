@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Description>Another steam client wrapper. This one is focused on testability and DI. Compatible x86 and x64.</Description>
+    <Copyright>RamenTurismo</Copyright>
+    <PackageProjectUrl>https://github.com/RamenTurismo/SamEleven</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/RamenTurismo/SamEleven</RepositoryUrl>
+    <PackageId>RamenTurismo.Steamworks</PackageId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

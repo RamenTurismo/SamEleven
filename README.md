@@ -1,18 +1,23 @@
-# Steam Achievement Manager
+# SAM Eleven
 
-This is the code for SAM, originally released in 2008, last major release in 2011, and last updated in 2013 (a hotfix).
+Otherwise called "Steam Achievement Manager Eleven", is a project derived from [gibbed's SteamAchievementManager](https://github.com/gibbed/SteamAchievementManager).
 
-The code is being made available so that those interested can do as they like with it.
+This project is an updated version, with the latest .NET technologies (WinUI, .NET 7), made specifically to follow Windows 11's UI and ergonomy guidelines.
 
-There are some changes to the code since the last closed-source release:
-- General code maintenance to bring it into a more modern state.
-- Icons have been replaced with ones from the Fugue Icons set.
-- Version has been bumped to 7.0.x.x to indicate the open-source release.
+## What changes
 
-[Download latest release](https://github.com/gibbed/SteamAchievementManager/releases/latest).
+### User wise
 
-[![Build status](https://ci.appveyor.com/api/projects/status/00vic6jliar6j0ol/branch/master?svg=true)](https://ci.appveyor.com/project/gibbed/steamachievementmanager/branch/master)
+This app is now composed of only one executable, and is thought out to be an SPA (Single Page Application).
 
-## Attribution
+### Technical
 
-Most (if not all) icons are from the [Fugue Icons](http://p.yusukekamiyamane.com/) set.
+The Steam API has been remade from scratch, to be adapted to .NET 7 new NativeLibrary communication, and to include DI and testability in mind.
+
+## Steam API Native Library : path to remake
+
+- [Interacting with native libraries in .NET Core 3.0](https://developers.redhat.com/blog/2019/09/06/interacting-with-native-libraries-in-net-core-3-0)
+- [Platform Invoke (P/Invoke)](https://learn.microsoft.com/en-us/dotnet/standard/native-interop/pinvoke)
+- [Facepunch.Steamworks](https://github.com/Facepunch/Facepunch.Steamworks/blob/master/Facepunch.Steamworks/SteamClient.cs)
+- [Steamworks API Overview](https://partner.steamgames.com/doc/sdk/api)
+- [Steam4NET](https://github.com/SteamRE/Steam4NET)
