@@ -1,57 +1,67 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SamEleven.App.Abstractions;
-using SamEleven.App.Steam.Client;
-using SamEleven.Steamworks;
+using SamEleven.App.Steam.DesktopApi;
+using SamEleven.App.Steam.WebApi;
 
 namespace SamEleven.App.Steam;
 
 internal sealed class SteamService : ISteamService
 {
-    private readonly ISteamClient _steamClient;
-    private readonly ISteamCdnService _steamCdnService;
+    private readonly SteamDesktopApiService _steamDesktopApiService;
+    private readonly SteamCommunityWebApiService _steamCommunityWebApiService;
     private readonly ILogger _logger;
 
-    private SteamInstallationInfo _steamInstallationInfo = null!;
-
     public SteamService(
-        ISteamClient steamClient,
-        ISteamCdnService steamCdnService,
+        SteamDesktopApiService steamDesktopApiService,
+        SteamCommunityWebApiService steamCommunityWebApiService,
         ILogger<SteamService> logger)
     {
-        _steamClient = steamClient;
-        _steamCdnService = steamCdnService;
+        _steamDesktopApiService = steamDesktopApiService;
+        _steamCommunityWebApiService = steamCommunityWebApiService;
         _logger = logger;
     }
 
-    public void Initialize(SteamInstallationInfo installationInfo)
+    public async ValueTask<IReadOnlyList<SteamGameInfo>> GetAllGamesAsync()
     {
-        _steamInstallationInfo = installationInfo;
+        Task<IReadOnlyList<SteamGameInfo>> desktopApiResponse = Task.Run(_steamDesktopApiService.GetAllInstalledGames);
+        Task<IReadOnlyList<SteamGameInfo>> webApiResponse = GetAllGamesFromWebApiAsync();
+
+        IReadOnlyList<SteamGameInfo>[] results = await Task.WhenAll(desktopApiResponse, webApiResponse);
+
+        return results
+            .SelectMany(e => e)
+            .GroupBy(e => e.Id, e => e, (k, v) => v.First())
+            .ToArray();
     }
 
-    public IReadOnlyList<SteamGameInfo> GetAllInstalledGames()
+    private async Task<IReadOnlyList<SteamGameInfo>> GetAllGamesFromWebApiAsync()
     {
-        List<SteamGameInfo> games = new(capacity: _steamInstallationInfo.AppsIds.Count);
+        ulong steamId64 = _steamDesktopApiService.GetSteamId();
 
-        foreach (string item in _steamInstallationInfo.AppsIds)
+        try
         {
-            if (!uint.TryParse(item, out uint gameId))
-            {
-                _logger.LogInformation("{AppId} is not a valid steam app ID", item);
+            UserGamesResponse? response = await _steamCommunityWebApiService.GetAllSteamGamesAsync(steamId64);
 
-                continue;
+            if (response == null)
+            {
+                return Array.Empty<SteamGameInfo>();
             }
 
-            SteamAppData appdata = _steamClient.GetAppData(gameId);
-
-            if (appdata.Name == null)
-            {
-                continue;
-            }
-
-            games.Add(new SteamGameInfo(gameId, appdata.Name, appdata.Logo == null ? null : _steamCdnService.BuildGameImageUri(gameId, appdata.Logo)));
+            return response.Games
+                .Select(e => new SteamGameInfo(
+                    e.AppId,
+                    e.Name.ToString(),
+                    new Uri(e.Logo)))
+                .ToArray();
         }
-
-        return games.AsReadOnly();
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Could not get games from steam community website");
+            return Array.Empty<SteamGameInfo>();
+        }
     }
 }

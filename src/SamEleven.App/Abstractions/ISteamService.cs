@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
-using SamEleven.App.Steam;
-using SamEleven.Steamworks;
+﻿using SamEleven.App.Steam;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SamEleven.App.Abstractions;
 
 public interface ISteamService
 {
-    void Initialize(SteamInstallationInfo installationInfo);
-
-    IReadOnlyList<SteamGameInfo> GetAllInstalledGames();
+    ValueTask<IReadOnlyList<SteamGameInfo>> GetAllGamesAsync();
 }

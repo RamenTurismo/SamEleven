@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using SamEleven.App.Abstractions;
@@ -25,15 +26,15 @@ public sealed partial class GamePickerViewModel : ObservableObject
         _steamService = steamService;
     }
 
-    internal void Initialize()
+    internal async Task InitializeAsync()
     {
-        LoadGames();
+        await LoadGamesAsync().ConfigureAwait(true);
         Search(query: null);
     }
 
-    private void LoadGames()
+    private async ValueTask LoadGamesAsync()
     {
-        IReadOnlyList<SteamGameInfo> steamGames = _steamService.GetAllInstalledGames();
+        IReadOnlyList<SteamGameInfo> steamGames = await _steamService.GetAllGamesAsync().ConfigureAwait(true);
 
         foreach (SteamGameInfo steamGame in steamGames)
         {

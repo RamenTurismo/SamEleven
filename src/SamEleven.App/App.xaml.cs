@@ -10,7 +10,8 @@ using Microsoft.UI.Xaml;
 using SamEleven.App.Abstractions;
 using SamEleven.App.Picker;
 using SamEleven.App.Steam;
-using SamEleven.App.Steam.Client;
+using SamEleven.App.Steam.DesktopApi;
+using SamEleven.App.Steam.WebApi;
 using SamEleven.Steamworks;
 
 namespace SamEleven.App;
@@ -18,7 +19,7 @@ namespace SamEleven.App;
 public partial class App : Application
 {
     private readonly ServiceProvider _provider;
-    
+
     public IServiceProvider Services => _provider;
 
     public App()
@@ -38,7 +39,11 @@ public partial class App : Application
             .Configure(o => configuration.Bind(SteamCdnOptions.SectionName, o));
         services.AddSingleton<ISteamCdnService, SteamCdnService>();
         services.AddSingleton<ISteamService, SteamService>();
-        services.AddSingleton<ISteamClient, GibbedSteamClientWrapper>();
+        services.AddSingleton<SteamDesktopApiService>();
+        services.AddHttpClient<SteamCommunityWebApiService>(options =>
+        {
+            configuration.Bind(SteamCommunityWebApiService.OptionsSectionName, options);
+        });
 
         services.AddSingleton(_ => new WeakReferenceMessenger());
 
@@ -65,12 +70,6 @@ public partial class App : Application
 
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
-        // TODO catch, error out for user + rethrow
-        SteamInstallationInfo steamInstallationInfo = SteamInstallationInfo.FromRegistry();
-
-        ISteamService steamService = Services.GetRequiredService<ISteamService>();
-        steamService.Initialize(steamInstallationInfo);
-
         //using SteamClient steamClient = SteamClient.CreateFromRegistry();
 
         //    SteamApiService steamApiService = new();
@@ -87,7 +86,7 @@ public partial class App : Application
         //SteamApi.Load("C:\\Program Files (x86)\\Steam");
 
         GamePickerViewModel gamePickerViewModel = Services.GetRequiredService<GamePickerViewModel>();
-        gamePickerViewModel.Initialize();
+        _ = gamePickerViewModel.InitializeAsync();
 
         MainWindowViewModel mainWindowViewModel = Services.GetRequiredService<MainWindowViewModel>();
         mainWindowViewModel.Initialize();

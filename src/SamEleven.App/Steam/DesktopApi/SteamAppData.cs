@@ -1,4 +1,4 @@
-﻿namespace SamEleven.App.Steam.Client;
+﻿namespace SamEleven.App.Steam.DesktopApi;
 
 public record class SteamAppData(
     string? Name,
