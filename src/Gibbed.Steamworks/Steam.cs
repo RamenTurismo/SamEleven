@@ -58,9 +58,11 @@ public static class Steam
 
     private static IntPtr _Handle = IntPtr.Zero;
 
-    public static string GetInstallPath()
+    public static string? GetInstallPath()
     {
-        return (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\Software\Valve\Steam", "InstallPath", null);
+        using RegistryKey? localKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+        using RegistryKey? steamKey = localKey.OpenSubKey(@"Software\Valve\Steam", false);
+        return (string?)steamKey?.GetValue("InstallPath");
     }
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
@@ -112,7 +114,7 @@ public static class Steam
             return true;
         }
 
-        string path = GetInstallPath();
+        string? path = GetInstallPath();
         if (path == null)
         {
             return false;
@@ -120,7 +122,7 @@ public static class Steam
 
         Native.SetDllDirectory(path + ";" + Path.Combine(path, "bin"));
 
-        path = Path.Combine(path, "steamclient.dll");
+        path = Path.Combine(path, "steamclient64.dll");
         IntPtr module = Native.LoadLibraryEx(path, IntPtr.Zero, Native.LoadWithAlteredSearchPath);
         if (module == IntPtr.Zero)
         {

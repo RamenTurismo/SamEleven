@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using Gibbed.Steamworks;
-using Microsoft.Extensions.Logging;
-using SamEleven.App.Abstractions;
-using SamEleven.Steamworks;
+﻿using System.Runtime.InteropServices;
+using System.Text;
+using ValveKeyValue;
 
 namespace SamEleven.App.Steam.DesktopApi;
 
 internal sealed class SteamDesktopApiService : IDisposable
 {
-    private ValueTuple<uint, GibbedSteamClient>? _activeClientCache;
+    private bool _isInitiated = false;
     private readonly ILogger _logger;
     private readonly ISteamCdnService _steamCdnService;
 
@@ -19,38 +16,28 @@ internal sealed class SteamDesktopApiService : IDisposable
         _steamCdnService = steamCdnService;
     }
 
-    private GibbedSteamClient GetOrCreateClient(uint id)
+    private void CheckIfInit()
     {
-        if (_activeClientCache?.Item1 == id) return _activeClientCache.Value.Item2;
+        if (_isInitiated) return;
 
-        _activeClientCache?.Item2.Dispose();
+        SteamAPI.Init();
 
-        GibbedSteamClient client = new();
-        client.Initialize(id);
-
-        _activeClientCache = ValueTuple.Create(id, client);
-
-        return client;
+        _isInitiated = true;
     }
 
     public void Dispose()
     {
-        _activeClientCache?.Item2.Dispose();
-    }
-
-    public SteamAppData GetAppData(uint appId)
-    {
-        GibbedSteamClient gibbedSteamClient = GetOrCreateClient(0);
-        string? name = gibbedSteamClient.SteamApps001!.GetAppData(appId, SteamAppData.NameKey);
-        string? logo = gibbedSteamClient.SteamApps001!.GetAppData(appId, SteamAppData.LogoKey);
-
-        return new SteamAppData(name, logo);
+        if (_isInitiated)
+        {
+            SteamAPI.Shutdown();
+        }
     }
 
     public ulong GetSteamId()
     {
-        GibbedSteamClient gibbedSteamClient = GetOrCreateClient(0);
-        return gibbedSteamClient.SteamUser!.GetSteamId();
+        CheckIfInit();
+
+        return SteamUser.GetSteamID().m_SteamID;
     }
 
     public IReadOnlyList<SteamGameInfo> GetAllInstalledGames()
@@ -67,7 +54,8 @@ internal sealed class SteamDesktopApiService : IDisposable
                 continue;
             }
 
-            SteamAppData appdata = GetAppData(gameId);
+            // SteamAppData appdata = GetAppData(gameId);
+            SteamAppData appdata = new("", "");
             if (appdata.Name == null)
             {
                 continue;

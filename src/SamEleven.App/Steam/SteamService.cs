@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using SamEleven.App.Abstractions;
-using SamEleven.App.Steam.DesktopApi;
-using SamEleven.App.Steam.WebApi;
-
-namespace SamEleven.App.Steam;
+﻿namespace SamEleven.App.Steam;
 
 internal sealed class SteamService : ISteamService
 {

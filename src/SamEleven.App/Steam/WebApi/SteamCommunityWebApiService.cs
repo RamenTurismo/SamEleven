@@ -1,10 +1,4 @@
-﻿using System.IO;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-
-namespace SamEleven.App.Steam.WebApi;
+﻿namespace SamEleven.App.Steam.WebApi;
 
 public sealed class SteamCommunityWebApiService
 {
@@ -21,7 +15,7 @@ public sealed class SteamCommunityWebApiService
     {
         XmlSerializer serializer = new(typeof(UserGamesResponse));
 
-        using Stream stream = await _httpClient.GetStreamAsync($"profiles/{userId}/games?tab=all&xml=1", cancellationToken);
+        using Stream stream = await _httpClient.GetStreamAsync($"profiles/{userId}/games?tab=all&xml=1", cancellationToken).ConfigureAwait(false);
         return serializer.Deserialize(stream) as UserGamesResponse;
     }
 }

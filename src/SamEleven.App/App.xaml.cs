@@ -1,20 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Reflection;
-using CommunityToolkit.Mvvm.Messaging;
-using Gibbed.Steamworks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.UI.Xaml;
-using SamEleven.App.Abstractions;
-using SamEleven.App.Picker;
-using SamEleven.App.Steam;
-using SamEleven.App.Steam.DesktopApi;
-using SamEleven.App.Steam.WebApi;
-using SamEleven.Steamworks;
-
-namespace SamEleven.App;
+﻿namespace SamEleven.App;
 
 public partial class App : Application
 {
@@ -37,9 +21,12 @@ public partial class App : Application
 
         services.AddOptions<SteamCdnOptions>()
             .Configure(o => configuration.Bind(SteamCdnOptions.SectionName, o));
+        services
+          .AddRefitClient<ISteamStoreApi>()
+          .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://store.steampowered.com/api/appdetails?appids"));
+        services.AddSingleton<SteamDesktopApiService>();
         services.AddSingleton<ISteamCdnService, SteamCdnService>();
         services.AddSingleton<ISteamService, SteamService>();
-        services.AddSingleton<SteamDesktopApiService>();
         services.AddHttpClient<SteamCommunityWebApiService>(options =>
         {
             configuration.Bind(SteamCommunityWebApiService.OptionsSectionName, options);
@@ -60,7 +47,7 @@ public partial class App : Application
 
     private static IConfiguration BuildConfiguration()
     {
-        using System.IO.Stream appSettingsJson = Assembly.GetExecutingAssembly().GetManifestResourceStream($"{typeof(App).Namespace}.appsettings.json")!;
+        using Stream appSettingsJson = Assembly.GetExecutingAssembly().GetManifestResourceStream($"{typeof(App).Namespace}.appsettings.json")!;
         Debug.Assert(appSettingsJson != null);
 
         return new ConfigurationBuilder()
