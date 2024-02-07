@@ -118,7 +118,7 @@ namespace SAM.API
                 return false;
             }
 
-            Native.SetDllDirectory(path + ";" + Path.Combine(path, "bin"));
+            bool set = Native.SetDllDirectory(path + ";" + Path.Combine(path, "bin"));
 
             path = Path.Combine(path, "steamclient.dll");
             IntPtr module = Native.LoadLibraryEx(path, IntPtr.Zero, Native.LoadWithAlteredSearchPath);
