@@ -28,7 +28,7 @@ public sealed partial class MainWindow : Window
 
     private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if(e.PropertyName == nameof(MainWindowViewModel.IsAnyGameSelected) && _viewModel.IsAnyGameSelected)
+        if (e.PropertyName == nameof(MainWindowViewModel.IsAnyGameSelected) && _viewModel.IsAnyGameSelected)
         {
             _frame.Navigate(typeof(AchievementPage));
         }

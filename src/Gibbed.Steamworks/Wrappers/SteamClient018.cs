@@ -213,4 +213,27 @@ public class SteamClient018 : NativeWrapper<ISteamClient018>
         return GetISteamApps<SteamApps008>(user, pipe, "STEAMAPPS_INTERFACE_VERSION008");
     }
     #endregion
+    [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
+    private delegate IntPtr NativeGetISteamAppList(int user, int pipe, IntPtr version);
+
+    public TClass GetISteamAppList<TClass>(int user, int pipe, string version)
+        where TClass : INativeWrapper, new()
+    {
+        using NativeStrings.StringHandle nativeVersion = NativeStrings.StringToStringHandle(version);
+        
+        IntPtr address = Call<IntPtr, NativeGetISteamAppList>(
+            Functions.GetISteamAppList,
+            user,
+            pipe,
+            nativeVersion.Handle);
+
+        TClass result = new();
+        result.SetupFunctions(address);
+
+        return result;
+    }
+    public SteamAppList001 GetSteamAppList001(int user, int pipe)
+    {
+        return GetISteamAppList<SteamAppList001>(user, pipe, "STEAMAPPLIST_INTERFACE_VERSION001");
+    }
 }

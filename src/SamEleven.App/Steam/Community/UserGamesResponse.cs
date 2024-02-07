@@ -1,17 +1,14 @@
-﻿using System;
-using System.Xml.Serialization;
-
-namespace SamEleven.App.Steam.WebApi;
+﻿namespace SamEleven.App.Steam.Community;
 
 [XmlRoot("gamesList")]
-public class UserGamesResponse
+public sealed record UserGamesResponse
 {
     [XmlArray("games")]
     [XmlArrayItem("game")]
-    public UserGame[] Games { get; set; } = Array.Empty<UserGame>();
+    public IEnumerable<UserGame> Games { get; init; } = Enumerable.Empty<UserGame>();
 }
 
-public class UserGame
+public sealed record UserGame
 {
     [XmlElement("appID")]
     public uint AppId { get; set; }

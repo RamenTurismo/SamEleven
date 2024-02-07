@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using Microsoft.UI.Xaml.Controls;
-using SamEleven.App.Steam;
 
 namespace SamEleven.App.Picker;
 

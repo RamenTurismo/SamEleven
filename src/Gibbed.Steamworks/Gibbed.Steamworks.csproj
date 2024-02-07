@@ -15,8 +15,9 @@
     <RepositoryType>Git</RepositoryType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <Platform>x64</Platform>
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <Platform>x86</Platform>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
 
 </Project>

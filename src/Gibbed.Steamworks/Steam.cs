@@ -122,8 +122,8 @@ public static class Steam
 
         Native.SetDllDirectory(path + ";" + Path.Combine(path, "bin"));
 
-        path = Path.Combine(path, "steamclient64.dll");
-        IntPtr module = Native.LoadLibraryEx(path, IntPtr.Zero, Native.LoadWithAlteredSearchPath);
+        path = Path.Combine(path, "steamclient.dll");
+        IntPtr module = NativeLibrary.Load(path);
         if (module == IntPtr.Zero)
         {
             return false;

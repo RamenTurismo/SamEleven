@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SamEleven.App.Steam;
+﻿namespace SamEleven.App.Steam;
 
 public sealed record SteamGameInfo(
     uint Id,

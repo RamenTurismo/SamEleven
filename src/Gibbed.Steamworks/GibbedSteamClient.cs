@@ -32,6 +32,7 @@ public class GibbedSteamClient : IDisposable
     public Wrappers.SteamUtils005? SteamUtils;
     public Wrappers.SteamApps001? SteamApps001;
     public Wrappers.SteamApps008? SteamApps008;
+    public Wrappers.SteamAppList001? SteamAppList001;
 
     private bool _IsDisposed = false;
     private int _Pipe;
@@ -84,6 +85,7 @@ public class GibbedSteamClient : IDisposable
         SteamUserStats = SteamClient.GetSteamUserStats006(_User, _Pipe);
         SteamApps001 = SteamClient.GetSteamApps001(_User, _Pipe);
         SteamApps008 = SteamClient.GetSteamApps008(_User, _Pipe);
+        SteamAppList001 = SteamClient.GetSteamAppList001(_User, _Pipe);
     }
 
     ~GibbedSteamClient()

@@ -1,4 +1,4 @@
-﻿namespace SamEleven.Steamworks;
+﻿namespace SamEleven.App.Steam.DesktopApi;
 
 public sealed class SteamInstallationInfoException : Exception
 {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Win32;
 
-namespace SamEleven.Steamworks;
+namespace SamEleven.App.Steam.DesktopApi;
 
 public sealed record SteamInstallationInfo(
     string InstallPath,

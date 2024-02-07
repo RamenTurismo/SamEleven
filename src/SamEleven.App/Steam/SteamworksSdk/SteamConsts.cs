@@ -1,4 +1,4 @@
-﻿namespace SamEleven.Steamworks;
+﻿namespace SamEleven.App.Steam.DesktopApi;
 
 /// <summary>
 /// Global constants used in this library.

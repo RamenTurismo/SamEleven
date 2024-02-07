@@ -1,8 +1,24 @@
-﻿namespace SamEleven.App;
+﻿using System.Runtime.InteropServices;
+using SamEleven.App.Steam.SteamworksSdk;
+
+namespace SamEleven.App;
 
 public partial class App : Application
 {
+    public static partial class Log
+    {
+        [LoggerMessage(LogLevel.Information, "Starting application")]
+        public static partial void Starting(ILogger logger);
+        [LoggerMessage(LogLevel.Information, "Started application in {Elapsed} ms")]
+        public static partial void Started(ILogger logger, long elapsed);
+        [LoggerMessage(LogLevel.Information, "Stopping application")]
+        public static partial void Stopping(ILogger logger);
+        [LoggerMessage(LogLevel.Information, "Stopped application in {Elapsed} ms")]
+        public static partial void Stopped(ILogger logger, long elapsed);
+    }
+
     private readonly ServiceProvider _provider;
+    private readonly ILogger<App> _logger;
 
     public IServiceProvider Services => _provider;
 
@@ -16,21 +32,21 @@ public partial class App : Application
 
         services.AddLogging(builder =>
         {
+            builder.AddConfiguration(configuration.GetSection("Logging"));
             builder.AddDebug();
         });
 
+        services.AddSingleton(configuration);
+
         services.AddOptions<SteamCdnOptions>()
             .Configure(o => configuration.Bind(SteamCdnOptions.SectionName, o));
-        services
-          .AddRefitClient<ISteamStoreApi>()
-          .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://store.steampowered.com/api/appdetails?appids"));
-        services.AddSingleton<SteamDesktopApiService>();
         services.AddSingleton<ISteamCdnService, SteamCdnService>();
+
+        services.AddSteamStoreApi();
+        services.AddSteamCommunityApi();
+
+        services.AddSingleton<SteamworksSdkApi>();
         services.AddSingleton<ISteamService, SteamService>();
-        services.AddHttpClient<SteamCommunityWebApiService>(options =>
-        {
-            configuration.Bind(SteamCommunityWebApiService.OptionsSectionName, options);
-        });
 
         services.AddSingleton(_ => new WeakReferenceMessenger());
 
@@ -43,6 +59,8 @@ public partial class App : Application
             ValidateOnBuild = true
 #endif
         });
+
+        _logger = _provider.GetRequiredService<ILogger<App>>();
     }
 
     private static IConfiguration BuildConfiguration()
@@ -57,6 +75,12 @@ public partial class App : Application
 
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
+        Log.Starting(_logger);
+        Stopwatch startAppWatch = Stopwatch.StartNew();
+
+        SteamApiClient client = new();
+        uint[] appIds = client.GetAppList();
+
         //using SteamClient steamClient = SteamClient.CreateFromRegistry();
 
         //    SteamApiService steamApiService = new();
@@ -81,12 +105,19 @@ public partial class App : Application
         MainWindow window = new(mainWindowViewModel, new Microsoft.UI.Xaml.Controls.Frame(), gamePickerViewModel);
         window.Closed += WindowClosed;
         window.Activate();
+
+        Log.Started(_logger, startAppWatch.ElapsedMilliseconds);
     }
 
     private void WindowClosed(object sender, WindowEventArgs args)
     {
+        Log.Stopping(_logger);
+        Stopwatch stopAppWatch = Stopwatch.StartNew();
+
         // Blocks the app thread to dispose of everything correctly.
         // Dispose methods can also contain work to do before destroying the service.
         _provider.DisposeAsync().AsTask().GetAwaiter().GetResult();
+
+        Log.Stopped(_logger, stopAppWatch.ElapsedMilliseconds);
     }
 }
