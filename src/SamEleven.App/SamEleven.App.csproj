@@ -60,8 +60,8 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Emyfreya.Steam\Emyfreya.Steam.csproj" />
     <ProjectReference Include="..\Gibbed.Steamworks\Gibbed.Steamworks.csproj" />
-    <ProjectReference Include="..\RamenTurismo.Steam\RamenTurismo.Steam.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="steam_api.dll">
