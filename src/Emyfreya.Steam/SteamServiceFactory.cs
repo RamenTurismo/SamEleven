@@ -1,4 +1,4 @@
-﻿namespace RamenTurismo.Steam;
+﻿namespace Emyfreya.Steam;
 
 public static class SteamServiceFactory
 {

@@ -1,4 +1,4 @@
-﻿namespace RamenTurismo.Steam.Models;
+﻿namespace Emyfreya.Steam.Models;
 
 internal sealed class VirtualClassWrapper<T>
     where T : struct

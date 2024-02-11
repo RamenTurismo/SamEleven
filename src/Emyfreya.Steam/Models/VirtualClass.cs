@@ -1,7 +1,7 @@
-﻿namespace RamenTurismo.Steam.Models;
+﻿namespace Emyfreya.Steam.Models;
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 internal struct VirtualClass
 {
-    public IntPtr VirtualTable;
+    public nint VirtualTable;
 }
