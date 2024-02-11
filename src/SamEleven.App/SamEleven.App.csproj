@@ -50,6 +50,11 @@
     <PackageReference Include="ValveKeyValue" Version="0.9.0.267" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Emyfreya.Steam\Emyfreya.Steam.csproj" />
+    <ProjectReference Include="..\Gibbed.Steamworks\Gibbed.Steamworks.csproj" />
+  </ItemGroup>
 
   <!-- 
     Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
@@ -58,15 +63,6 @@
   -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Emyfreya.Steam\Emyfreya.Steam.csproj" />
-    <ProjectReference Include="..\Gibbed.Steamworks\Gibbed.Steamworks.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="steam_api.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <!-- 
