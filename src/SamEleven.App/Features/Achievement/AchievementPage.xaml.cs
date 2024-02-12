@@ -7,8 +7,9 @@ namespace SamEleven.App.Features.Achievement;
 
 public sealed partial class AchievementPage : Page
 {
-    public AchievementPage()
+    public AchievementPage(AchievementPageViewModel viewModel)
     {
-        this.InitializeComponent();
+        InitializeComponent();
+        DataContext = viewModel;
     }
 }

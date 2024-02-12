@@ -3,11 +3,11 @@
 
 namespace SamEleven.App.Features.Picker;
 
-public sealed partial class GamePicker : UserControl
+public sealed partial class GamePickerPage : UserControl
 {
-    private readonly GamePickerViewModel _viewModel;
+    private readonly GamePickerPageViewModel _viewModel;
 
-    public GamePicker(GamePickerViewModel viewModel)
+    public GamePickerPage(GamePickerPageViewModel viewModel)
     {
         InitializeComponent();
         DataContext = viewModel;
@@ -50,10 +50,5 @@ public sealed partial class GamePicker : UserControl
         {
             _viewModel.SelectGame(searchItem);
         }
-    }
-
-    private void Image_ImageFailed(object sender, ExceptionRoutedEventArgs e)
-    {
-
     }
 }

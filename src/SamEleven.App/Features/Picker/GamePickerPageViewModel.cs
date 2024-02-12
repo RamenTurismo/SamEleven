@@ -1,6 +1,6 @@
 ﻿namespace SamEleven.App.Features.Picker;
 
-public sealed partial class GamePickerViewModel : ObservableObject, IDisposable
+public sealed partial class GamePickerPageViewModel : ObservableObject, IRecipient<FrameNavigated>, IDisposable
 {
     [ObservableProperty]
     private ObservableCollection<SteamGameInfo> _games;
@@ -14,18 +14,28 @@ public sealed partial class GamePickerViewModel : ObservableObject, IDisposable
     private readonly IDispatcherQueueService _dispatcherQueue;
     private CancellationTokenSource? _searchTokenSource;
 
-    public GamePickerViewModel(WeakReferenceMessenger messenger, ISteamService steamService, IDispatcherQueueService dispatcherQueue)
+    public GamePickerPageViewModel(WeakReferenceMessenger messenger, ISteamService steamService, IDispatcherQueueService dispatcherQueue)
     {
         Games = new ObservableCollection<SteamGameInfo>();
         _gamesCache = [];
         _messenger = messenger;
         _steamService = steamService;
         _dispatcherQueue = dispatcherQueue;
+
+        _messenger.RegisterAll(this);
     }
 
-    internal async Task InitializeAsync()
+    public void Dispose()
     {
-        await Task.Run(LoadGamesAsync).ConfigureAwait(true);
+        _searchTokenSource?.Cancel();
+        _searchTokenSource?.Dispose();
+
+        _messenger.UnregisterAll(this);
+    }
+
+    public void Receive(FrameNavigated message)
+    {
+        Task.Run(LoadGamesAsync);
     }
 
     private async ValueTask LoadGamesAsync()
@@ -76,11 +86,5 @@ public sealed partial class GamePickerViewModel : ObservableObject, IDisposable
         }
 
         return gamesQuery;
-    }
-
-    public void Dispose()
-    {
-        _searchTokenSource?.Cancel();
-        _searchTokenSource?.Dispose();
     }
 }

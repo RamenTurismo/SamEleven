@@ -1,24 +1,27 @@
-﻿using System;
-using CommunityToolkit.Mvvm.Messaging;
-using SamEleven.App.Features.Picker;
-
-namespace SamEleven.App;
+﻿namespace SamEleven.App;
 
 public sealed partial class MainWindowViewModel : ObservableObject, IDisposable, IRecipient<GameSelectedMessage>
 {
+    public bool IsAnyGameSelected => SteamGameInfo is not null;
+
     [ObservableProperty]
-    private bool _isAnyGameSelected;
+    [NotifyPropertyChangedFor(nameof(IsAnyGameSelected))]
+    private SteamGameInfo? _steamGameInfo;
 
     private readonly WeakReferenceMessenger _messenger;
+    private readonly INavigationService _navigationService;
 
-    public MainWindowViewModel(WeakReferenceMessenger messenger)
+    public MainWindowViewModel(WeakReferenceMessenger messenger, INavigationService navigationService)
     {
         _messenger = messenger;
+        _navigationService = navigationService;
     }
 
     public void Receive(GameSelectedMessage message)
     {
-        IsAnyGameSelected = message.Game is not null;
+        SteamGameInfo = message.Game;
+
+        _navigationService.NavigateAsync<AchievementPageViewModel>();
     }
 
     public void Dispose()

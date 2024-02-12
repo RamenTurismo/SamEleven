@@ -7,10 +7,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:SamEleven.App"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:picker="using:SamEleven.App.Picker"
+    xmlns:picker="using:SamEleven.App.Features.Picker"
     mc:Ignorable="d">
 
-    <Grid>
+    <Grid d:DataContext="{d:DesignInstance local:MainWindowViewModel}">
         <Grid.Resources>
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <converters:BoolToObjectConverter
@@ -19,29 +19,13 @@
                 TrueValue="Collapsed" />
         </Grid.Resources>
 
-        <!--<Grid x:Name="GamePickerGrid" Visibility="{Binding IsAnyGameSelected, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True}" />-->
-
-        <NavigationView
-            x:Name="NavigationView"
-            Header="This is Header Text"
-            IsPaneVisible="{Binding IsAnyGameSelected}">
+        <NavigationView x:Name="NavigationView">
             <NavigationView.MenuItems>
+                <NavigationViewItem Content="Games" Icon="Library" />
                 <NavigationViewItem
-                    Content="Menu Item1"
-                    Icon="Play"
-                    Tag="SamplePage1" />
-                <NavigationViewItem
-                    Content="Menu Item2"
-                    Icon="Save"
-                    Tag="SamplePage2" />
-                <NavigationViewItem
-                    Content="Menu Item3"
-                    Icon="Refresh"
-                    Tag="SamplePage3" />
-                <NavigationViewItem
-                    Content="Menu Item4"
-                    Icon="Download"
-                    Tag="SamplePage4" />
+                    Content="Achievements"
+                    Icon="ShowResults"
+                    IsEnabled="{Binding IsAnyGameSelected}" />
             </NavigationView.MenuItems>
             <Frame x:Name="ContentFrame" />
         </NavigationView>

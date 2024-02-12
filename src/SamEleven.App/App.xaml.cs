@@ -43,8 +43,15 @@ public partial class App : Application
 
         services.AddSingleton(_ => new WeakReferenceMessenger());
 
-        services.AddSingleton<GamePickerViewModel>();
-        services.AddSingleton<MainWindowViewModel>();
+        Frame frame = new();
+
+        services.AddSingleton(frame)
+            .AddSingleton<MainWindowViewModel>()
+            .AddSingleton<MainWindow>();
+
+        services.AddNavigationService(frame)
+            .AddView<GamePickerPage, GamePickerPageViewModel>()
+            .AddView<AchievementPage, AchievementPageViewModel>();
 
         services.AddDispatcherQueueService();
 
@@ -73,17 +80,23 @@ public partial class App : Application
         Log.Starting(_logger);
         Stopwatch startAppWatch = Stopwatch.StartNew();
 
-        GamePickerViewModel gamePickerViewModel = Services.GetRequiredService<GamePickerViewModel>();
-        _ = gamePickerViewModel.InitializeAsync();
-
         MainWindowViewModel mainWindowViewModel = Services.GetRequiredService<MainWindowViewModel>();
         mainWindowViewModel.Initialize();
 
-        MainWindow window = new(mainWindowViewModel, new Frame(), gamePickerViewModel);
-        window.Closed += WindowClosed;
+        MainWindow window = Services.GetRequiredService<MainWindow>();
+        ConfigureWindow(window);
+
+        _ = Services.GetRequiredService<INavigationService>().NavigateAsync<GamePickerPageViewModel>();
         window.Activate();
 
         Log.Started(_logger, startAppWatch.ElapsedMilliseconds);
+    }
+
+    private void ConfigureWindow(Window window)
+    {
+        window.SetWindowSize(1300, 720);
+        window.Title = $"S.A.M. Eleven | v{Assembly.GetExecutingAssembly().GetName().Version}";
+        window.Closed += WindowClosed;
     }
 
     private void WindowClosed(object sender, WindowEventArgs args)

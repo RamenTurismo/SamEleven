@@ -2,10 +2,7 @@
 
 public sealed partial class MainWindow : Window
 {
-    private readonly MainWindowViewModel _viewModel;
-    private readonly Frame _frame;
-
-    public MainWindow(MainWindowViewModel viewModel, Frame frame, GamePickerViewModel gamePickerViewModel)
+    public MainWindow(MainWindowViewModel viewModel, Frame frame)
     {
         InitializeComponent();
 
@@ -13,19 +10,7 @@ public sealed partial class MainWindow : Window
         {
             frameworkElement.DataContext = viewModel;
         }
+
         NavigationView.Content = frame;
-        frame.Content = new GamePicker(gamePickerViewModel);
-
-        viewModel.PropertyChanged += ViewModel_PropertyChanged;
-        _viewModel = viewModel;
-        _frame = frame;
-    }
-
-    private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(MainWindowViewModel.IsAnyGameSelected) && _viewModel.IsAnyGameSelected)
-        {
-            _frame.Navigate(typeof(AchievementPage));
-        }
     }
 }

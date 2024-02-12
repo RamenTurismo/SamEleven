@@ -34,3 +34,4 @@ global using SamEleven.App.Features.Picker;
 global using SamEleven.App.Steam;
 global using SamEleven.App.Steam.Models;
 global using SamEleven.App.UI;
+global using WinUIEx;
