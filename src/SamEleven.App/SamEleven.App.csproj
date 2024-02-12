@@ -41,7 +41,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Emyfreya.Steam.Desktop\Emyfreya.Steam.Desktop.csproj" />
     <ProjectReference Include="..\Emyfreya.Steam.Web\Emyfreya.Steam.Web.csproj" />
-    <ProjectReference Include="..\Gibbed.Steamworks\Gibbed.Steamworks.csproj" />
   </ItemGroup>
 
   <!-- 
