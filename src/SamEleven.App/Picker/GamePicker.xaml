@@ -49,7 +49,7 @@
 
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid CornerRadius="8" Background="{ThemeResource }">
+                    <Grid CornerRadius="8">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />

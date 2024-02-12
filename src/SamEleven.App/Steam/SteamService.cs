@@ -1,43 +1,58 @@
 ﻿namespace SamEleven.App.Steam;
 
-internal sealed class SteamService : ISteamService
+internal sealed partial class SteamService : ISteamService
 {
-    private readonly SteamworksSdkApi _steamDesktopApiService;
-    private readonly ISteamCommunityApi _steamCommunityApi;
-
-    public SteamService(
-        SteamworksSdkApi steamDesktopApiService,
-        ISteamCommunityApi steamCommunityApi)
+    private static partial class Log
     {
-        _steamDesktopApiService = steamDesktopApiService;
-        _steamCommunityApi = steamCommunityApi;
+        [LoggerMessage(LogLevel.Debug, "Fetching subscribed AppIds from AppIds of length {Length}.")]
+        public static partial void FetchingAppIds(ILogger logger, int length);
+        [LoggerMessage(LogLevel.Information, "Found {Subscribed} subscribed AppIds in {Elapsed}ms from total of {Length} AppIds.")]
+        public static partial void FoundSubscribedAppIds(ILogger logger, ushort subscribed, long elapsed, int length);
     }
 
-    public async ValueTask<SteamGameInfo[]> GetAllGamesAsync(CancellationToken cancellationToken = default)
+    private readonly ISteamClientManager _steamDesktop;
+    private readonly ISteamApi _steamWebApi;
+    private readonly ILogger _logger;
+
+    public SteamService(ISteamApi steamWebApi, ISteamClientManager steamDesktop, ILogger<SteamService> logger)
     {
-        ulong steamId64 = _steamDesktopApiService.GetSteamId();
-
-        Task<IEnumerable<SteamGameInfo>> desktopApiResponse = Task.Run(_steamDesktopApiService.GetAllInstalledGames);
-        Task<IEnumerable<SteamGameInfo>> webApiResponse = GetAllAppsFromCommunityAsync(steamId64, cancellationToken);
-
-        IEnumerable<SteamGameInfo>[] results = await Task.WhenAll(desktopApiResponse, webApiResponse);
-
-        return results
-            .Aggregate((l, r) => l.Concat(r))
-            .ToArray();
+        _steamWebApi = steamWebApi;
+        _steamDesktop = steamDesktop;
+        _logger = logger;
     }
 
-    private async Task<IEnumerable<SteamGameInfo>> GetAllAppsFromCommunityAsync(ulong steamId, CancellationToken cancellationToken = default)
+    public async IAsyncEnumerable<SteamGameInfo> GetAllGamesAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        ApiResponse<UserGamesResponse> apiResponse = await _steamCommunityApi.GetAllGamesAsync(steamId, cancellationToken).ConfigureAwait(false);
+        using ApiResponse<GetAppListResult> appList = await _steamWebApi.GetAppListAsync(cancellationToken: cancellationToken);
 
-        if (apiResponse.Content is null) return Enumerable.Empty<SteamGameInfo>();
+        if (!appList.IsSuccessStatusCode) yield break;
 
-        return apiResponse.Content.Games
-            .Select(e => new SteamGameInfo(
-                e.AppId,
-                e.Name.ToString(),
-                new Uri(e.Logo)))
-            .ToArray();
+        GetAppListAppResult[] apps = appList.Content.AppList.Apps;
+
+        Log.FetchingAppIds(_logger, apps.Length);
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        ushort subscribed = 0;
+
+        foreach (GetAppListAppResult app in apps)
+        {
+            Result<bool> isSubcribed = _steamDesktop.IsSubcribedApp(app.AppId);
+
+            if (isSubcribed.IsFailed || !isSubcribed.Value) continue;
+
+            yield return new SteamGameInfo(app.AppId, app.Name, BuildLogoUri(app.AppId));
+
+            subscribed++;
+        }
+
+        Log.FoundSubscribedAppIds(_logger, subscribed, stopwatch.ElapsedMilliseconds, apps.Length);
+    }
+
+    private Uri? BuildLogoUri(uint appId)
+    {
+        Result<string> logo = _steamDesktop.GetAppLogo(appId);
+
+        if (logo.IsFailed) return null;
+
+        return new Uri($"https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/{appId}/{logo.Value}.jpg");
     }
 }

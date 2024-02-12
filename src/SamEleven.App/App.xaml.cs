@@ -1,7 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using SamEleven.App.Steam.SteamworksSdk;
-
-namespace SamEleven.App;
+﻿namespace SamEleven.App;
 
 public partial class App : Application
 {
@@ -38,14 +35,10 @@ public partial class App : Application
 
         services.AddSingleton(configuration);
 
-        services.AddOptions<SteamCdnOptions>()
-            .Configure(o => configuration.Bind(SteamCdnOptions.SectionName, o));
-        services.AddSingleton<ISteamCdnService, SteamCdnService>();
+        services.AddSteamApi()
+            .AddDefaultLogger();
 
-        services.AddSteamStoreApi();
-        services.AddSteamCommunityApi();
-
-        services.AddSingleton<SteamworksSdkApi>();
+        services.AddSingleton<ISteamClientManager, SteamClientManager>();
         services.AddSingleton<ISteamService, SteamService>();
 
         services.AddSingleton(_ => new WeakReferenceMessenger());
@@ -77,24 +70,6 @@ public partial class App : Application
     {
         Log.Starting(_logger);
         Stopwatch startAppWatch = Stopwatch.StartNew();
-
-        SteamApiClient client = new();
-        uint[] appIds = client.GetAppList();
-
-        //using SteamClient steamClient = SteamClient.CreateFromRegistry();
-
-        //    SteamApiService steamApiService = new();
-        //    steamApiService.GetAllInstalledApps();
-        //SteamClient.Init(4000);
-        //var dsa = SteamClient.SteamId;// Your SteamId
-        //var d = SteamClient.Name;// Your Name
-        //foreach (var a in SteamUserStats.Achievements)
-        //{
-
-        //    SteamUserStats.
-        //    Debug.WriteLine($"{a.Name} ({a.State})");
-        //}
-        //SteamApi.Load("C:\\Program Files (x86)\\Steam");
 
         GamePickerViewModel gamePickerViewModel = Services.GetRequiredService<GamePickerViewModel>();
         _ = gamePickerViewModel.InitializeAsync();

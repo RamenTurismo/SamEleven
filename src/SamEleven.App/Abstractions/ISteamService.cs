@@ -2,5 +2,5 @@
 
 public interface ISteamService
 {
-    ValueTask<SteamGameInfo[]> GetAllGamesAsync(CancellationToken cancellationToken = default);
+    IAsyncEnumerable<SteamGameInfo> GetAllGamesAsync(CancellationToken cancellationToken = default);
 }
