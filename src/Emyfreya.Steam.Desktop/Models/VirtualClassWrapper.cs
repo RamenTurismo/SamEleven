@@ -1,4 +1,4 @@
-﻿namespace Emyfreya.Steam.Models;
+﻿namespace Emyfreya.Steam.Desktop.Models;
 
 internal sealed class VirtualClassWrapper<T>
     where T : struct

@@ -1,4 +1,7 @@
-﻿namespace Emyfreya.Steam;
+﻿using Emyfreya.Steam.Desktop.Abstractions;
+using Emyfreya.Steam.Desktop.Client;
+
+namespace Emyfreya.Steam.Desktop;
 
 public sealed class SteamClientManager : ISteamClientManager
 {

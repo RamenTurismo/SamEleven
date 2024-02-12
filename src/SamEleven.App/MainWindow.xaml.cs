@@ -2,6 +2,8 @@
 
 public sealed partial class MainWindow : Window
 {
+    private readonly MainWindowViewModel _viewModel;
+
     public MainWindow(MainWindowViewModel viewModel, Frame frame)
     {
         InitializeComponent();
@@ -12,5 +14,11 @@ public sealed partial class MainWindow : Window
         }
 
         NavigationView.Content = frame;
+        _viewModel = viewModel;
+    }
+
+    private void NavigationViewItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+    {
+        _viewModel.RequestNavigationAsync(args.InvokedItemContainer.Tag, args.IsSettingsInvoked);
     }
 }

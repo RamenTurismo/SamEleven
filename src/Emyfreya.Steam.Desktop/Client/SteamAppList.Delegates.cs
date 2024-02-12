@@ -1,4 +1,4 @@
-﻿namespace Emyfreya.Steam.Desktop;
+﻿namespace Emyfreya.Steam.Desktop.Client;
 
 [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
 internal delegate uint GetNumInstalledApps(nint self);

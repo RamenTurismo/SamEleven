@@ -1,4 +1,4 @@
-﻿namespace Emyfreya.Steam.Desktop;
+﻿namespace Emyfreya.Steam.Desktop.Client;
 
 /// <summary>
 /// The client that works around <c>steamclient.dll</c>.

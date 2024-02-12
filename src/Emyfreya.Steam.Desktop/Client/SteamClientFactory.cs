@@ -1,4 +1,4 @@
-﻿namespace Emyfreya.Steam.Desktop;
+﻿namespace Emyfreya.Steam.Desktop.Client;
 
 internal static class SteamClientFactory
 {

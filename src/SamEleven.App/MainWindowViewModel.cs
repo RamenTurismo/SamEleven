@@ -33,4 +33,22 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable,
     {
         _messenger.Register(this);
     }
+
+    internal Task RequestNavigationAsync(object tag, bool isSettingsInvoked)
+    {
+        Type viewModelType = MapViewModelType(tag, isSettingsInvoked);
+
+        return _navigationService.NavigateAsync(viewModelType);
+    }
+
+    private static Type MapViewModelType(object tag, bool isSettingsInvoked)
+    {
+        if (isSettingsInvoked) return typeof(GamePickerPageViewModel);
+
+        return tag switch
+        {
+            "achievements" => typeof(AchievementPageViewModel),
+            _ => typeof(GamePickerPageViewModel),
+        };
+    }
 }

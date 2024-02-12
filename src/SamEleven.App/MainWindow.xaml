@@ -22,10 +22,17 @@
         <NavigationView
             x:Name="NavigationView"
             IsPaneOpen="False"
-            IsPaneVisible="{Binding IsAnyGameSelected}">
+            IsPaneVisible="{Binding IsAnyGameSelected}"
+            ItemInvoked="NavigationViewItemInvoked">
             <NavigationView.MenuItems>
-                <NavigationViewItem Content="Games" Icon="Library" />
-                <NavigationViewItem Content="Achievements" Icon="ShowResults" />
+                <NavigationViewItem
+                    Content="Games"
+                    Icon="Library"
+                    Tag="games" />
+                <NavigationViewItem
+                    Content="Achievements"
+                    Icon="ShowResults"
+                    Tag="achievements" />
             </NavigationView.MenuItems>
             <Frame x:Name="ContentFrame" />
         </NavigationView>

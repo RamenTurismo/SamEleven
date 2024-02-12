@@ -1,4 +1,4 @@
-﻿namespace Emyfreya.Steam.Abstractions;
+﻿namespace Emyfreya.Steam.Desktop.Abstractions;
 
 public interface ISteamClient : IDisposable
 {

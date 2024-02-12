@@ -1,4 +1,4 @@
-﻿namespace SamEleven.App.UI;
+﻿namespace SamEleven.App.Abstractions;
 
 public interface INavigationServiceBuilder
 {

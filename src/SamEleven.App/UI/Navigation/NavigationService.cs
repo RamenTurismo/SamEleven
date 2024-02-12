@@ -1,4 +1,4 @@
-﻿namespace SamEleven.App.UI;
+﻿namespace SamEleven.App.UI.Navigation;
 
 internal sealed partial class NavigationService : INavigationService
 {
@@ -30,24 +30,27 @@ internal sealed partial class NavigationService : INavigationService
         return CurrentScope?.DisposeAsync() ?? ValueTask.CompletedTask;
     }
 
-    public async Task NavigateAsync<TViewModel>() where TViewModel : ObservableObject
+    public Task NavigateAsync<TViewModel>() where TViewModel : ObservableObject
+        => NavigateAsync(typeof(TViewModel));
+
+    public async Task NavigateAsync(Type viewModelType)
     {
         if (CurrentScope is { } oldScope)
         {
             await oldScope.DisposeAsync().ConfigureAwait(true);
         }
 
-        Log.ContentChanging(_logger, typeof(TViewModel));
+        Log.ContentChanging(_logger, viewModelType);
         Stopwatch stopwatch = Stopwatch.StartNew();
 
         CurrentScope = _scopeFactory.CreateAsyncScope();
         IServiceProvider provider = CurrentScope.Value.ServiceProvider;
 
-        FrameworkElement page = provider.GetRequiredKeyedService<FrameworkElement>(typeof(TViewModel));
+        FrameworkElement page = provider.GetRequiredKeyedService<FrameworkElement>(viewModelType);
 
         _frame.Content = page;
 
-        Log.ContentChanged(_logger, stopwatch.ElapsedMilliseconds, typeof(TViewModel), page.GetType());
+        Log.ContentChanged(_logger, stopwatch.ElapsedMilliseconds, viewModelType, page.GetType());
 
         _weakReferenceMessenger.Send(new FrameNavigated());
     }

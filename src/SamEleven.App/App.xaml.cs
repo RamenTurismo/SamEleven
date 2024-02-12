@@ -1,4 +1,7 @@
-﻿namespace SamEleven.App;
+﻿using Emyfreya.Steam.Desktop;
+using Emyfreya.Steam.Desktop.Abstractions;
+
+namespace SamEleven.App;
 
 public partial class App : Application
 {

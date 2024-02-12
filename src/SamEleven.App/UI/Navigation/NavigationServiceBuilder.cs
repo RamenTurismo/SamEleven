@@ -1,4 +1,4 @@
-﻿namespace SamEleven.App.UI;
+﻿namespace SamEleven.App.UI.Navigation;
 
 internal sealed class NavigationServiceBuilder : INavigationServiceBuilder
 {

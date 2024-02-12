@@ -1,4 +1,4 @@
-﻿namespace Emyfreya.Steam.Models;
+﻿namespace Emyfreya.Steam.Desktop.Models;
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 internal struct SteamClient018
