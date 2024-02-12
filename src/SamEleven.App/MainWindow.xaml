@@ -19,13 +19,13 @@
                 TrueValue="Collapsed" />
         </Grid.Resources>
 
-        <NavigationView x:Name="NavigationView">
+        <NavigationView
+            x:Name="NavigationView"
+            IsPaneOpen="False"
+            IsPaneVisible="{Binding IsAnyGameSelected}">
             <NavigationView.MenuItems>
                 <NavigationViewItem Content="Games" Icon="Library" />
-                <NavigationViewItem
-                    Content="Achievements"
-                    Icon="ShowResults"
-                    IsEnabled="{Binding IsAnyGameSelected}" />
+                <NavigationViewItem Content="Achievements" Icon="ShowResults" />
             </NavigationView.MenuItems>
             <Frame x:Name="ContentFrame" />
         </NavigationView>
