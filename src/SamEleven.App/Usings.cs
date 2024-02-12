@@ -14,6 +14,7 @@ global using System.Threading;
 global using System.Threading.Tasks;
 global using CommunityToolkit.Mvvm.ComponentModel;
 global using CommunityToolkit.Mvvm.Messaging;
+global using Emyfreya.Steam.Desktop;
 global using Emyfreya.Steam.Desktop.Abstractions;
 global using Emyfreya.Steam.Web.Abstractions;
 global using Emyfreya.Steam.Web.Api;

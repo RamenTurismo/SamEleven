@@ -16,13 +16,13 @@ public sealed partial class GamePickerPageViewModel : ObservableObject, IRecipie
 
     public GamePickerPageViewModel(WeakReferenceMessenger messenger, ISteamService steamService, IDispatcherQueueService dispatcherQueue)
     {
-        Games = new ObservableCollection<SteamGameInfo>();
         _gamesCache = [];
         _messenger = messenger;
         _steamService = steamService;
         _dispatcherQueue = dispatcherQueue;
 
         _messenger.RegisterAll(this);
+        Games = new ObservableCollection<SteamGameInfo>();
     }
 
     public void Dispose()
@@ -35,19 +35,10 @@ public sealed partial class GamePickerPageViewModel : ObservableObject, IRecipie
 
     public void Receive(FrameNavigated message)
     {
+        // So it doesn't get called more than once.
+        _messenger.UnregisterAll(this);
+
         Task.Run(LoadGamesAsync);
-    }
-
-    private async ValueTask LoadGamesAsync()
-    {
-        await foreach (SteamGameInfo steamGame in _steamService.GetAllGamesAsync().ConfigureAwait(false))
-        {
-            _gamesCache.TryAdd(steamGame.Id, steamGame);
-
-            await _dispatcherQueue.Enqueue(() => Games.Add(steamGame)).ConfigureAwait(false);
-        }
-
-        await _dispatcherQueue.Enqueue(() => IsSearchAvailable = true).ConfigureAwait(false);
     }
 
     public void SelectGame(SteamGameInfo game)
@@ -64,6 +55,18 @@ public sealed partial class GamePickerPageViewModel : ObservableObject, IRecipie
 
         Games = new ObservableCollection<SteamGameInfo>();
         return Task.Run(() => SearchAsync(query, _searchTokenSource.Token));
+    }
+
+    private async ValueTask LoadGamesAsync()
+    {
+        await foreach (SteamGameInfo steamGame in _steamService.GetAllGamesAsync().ConfigureAwait(false))
+        {
+            _gamesCache.TryAdd(steamGame.Id, steamGame);
+
+            await _dispatcherQueue.Enqueue(() => Games.Add(steamGame)).ConfigureAwait(false);
+        }
+
+        await _dispatcherQueue.Enqueue(() => IsSearchAvailable = true).ConfigureAwait(false);
     }
 
     private async Task SearchAsync(string? query, CancellationToken cancellationToken = default)

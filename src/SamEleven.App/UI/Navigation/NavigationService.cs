@@ -10,7 +10,8 @@ internal sealed partial class NavigationService : INavigationService
         public static partial void ContentChanged(ILogger logger, long elapsed, Type viewModel, Type view);
     }
 
-    private AsyncServiceScope? CurrentScope { get; set; }
+    private AsyncServiceScope? _currentScope;
+    private Type? _last;
 
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly Frame _frame;
@@ -27,7 +28,7 @@ internal sealed partial class NavigationService : INavigationService
 
     public ValueTask DisposeAsync()
     {
-        return CurrentScope?.DisposeAsync() ?? ValueTask.CompletedTask;
+        return _currentScope?.DisposeAsync() ?? ValueTask.CompletedTask;
     }
 
     public Task NavigateAsync<TViewModel>() where TViewModel : ObservableObject
@@ -35,7 +36,11 @@ internal sealed partial class NavigationService : INavigationService
 
     public async Task NavigateAsync(Type viewModelType)
     {
-        if (CurrentScope is { } oldScope)
+        if (_last == viewModelType) return;
+
+        _last = viewModelType;
+
+        if (_currentScope is { } oldScope)
         {
             await oldScope.DisposeAsync().ConfigureAwait(true);
         }
@@ -43,8 +48,8 @@ internal sealed partial class NavigationService : INavigationService
         Log.ContentChanging(_logger, viewModelType);
         Stopwatch stopwatch = Stopwatch.StartNew();
 
-        CurrentScope = _scopeFactory.CreateAsyncScope();
-        IServiceProvider provider = CurrentScope.Value.ServiceProvider;
+        _currentScope = _scopeFactory.CreateAsyncScope();
+        IServiceProvider provider = _currentScope.Value.ServiceProvider;
 
         FrameworkElement page = provider.GetRequiredKeyedService<FrameworkElement>(viewModelType);
 
@@ -52,6 +57,6 @@ internal sealed partial class NavigationService : INavigationService
 
         Log.ContentChanged(_logger, stopwatch.ElapsedMilliseconds, viewModelType, page.GetType());
 
-        _weakReferenceMessenger.Send(new FrameNavigated());
+        _weakReferenceMessenger.Send(new FrameNavigated(viewModelType));
     }
 }

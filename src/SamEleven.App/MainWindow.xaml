@@ -21,9 +21,21 @@
 
         <NavigationView
             x:Name="NavigationView"
+            IsBackButtonVisible="Collapsed"
             IsPaneOpen="False"
             IsPaneVisible="{Binding IsAnyGameSelected}"
-            ItemInvoked="NavigationViewItemInvoked">
+            ItemInvoked="NavigationViewItemInvoked"
+            PaneTitle="{Binding SteamGameInfo.Name}">
+            <NavigationView.PaneCustomContent>
+                <controls:ImageEx
+                    Height="50"
+                    Margin="0,8"
+                    IsCacheEnabled="True"
+                    PlaceholderSource="ms-appx:///Assets/steam-logo.jpg"
+                    PlaceholderStretch="UniformToFill"
+                    Source="{Binding SteamGameInfo.Image}"
+                    Stretch="Uniform" />
+            </NavigationView.PaneCustomContent>
             <NavigationView.MenuItems>
                 <NavigationViewItem
                     Content="Games"

@@ -41,6 +41,8 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable,
         return _navigationService.NavigateAsync(viewModelType);
     }
 
+    internal Type GetViewModelType(object tag) => MapViewModelType(tag, isSettingsInvoked: false);
+
     private static Type MapViewModelType(object tag, bool isSettingsInvoked)
     {
         if (isSettingsInvoked) return typeof(GamePickerPageViewModel);
