@@ -24,7 +24,7 @@ public sealed partial class GamePickerPage : UserControl
 
     private void AutoSuggestBoxQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
     {
-        if (args.ChosenSuggestion is SteamGameInfo searchItem)
+        if (args.ChosenSuggestion is SteamApp searchItem)
         {
             _viewModel.SelectGame(searchItem);
         }
@@ -46,7 +46,7 @@ public sealed partial class GamePickerPage : UserControl
 
     private void SelectItem(object e)
     {
-        if (e is SteamGameInfo searchItem)
+        if (e is SteamApp searchItem)
         {
             _viewModel.SelectGame(searchItem);
         }

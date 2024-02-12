@@ -3,12 +3,12 @@
 public sealed partial class GamePickerPageViewModel : ObservableObject, IRecipient<FrameNavigated>, IDisposable
 {
     [ObservableProperty]
-    private ObservableCollection<SteamGameInfo> _games;
+    private ObservableCollection<SteamApp> _games;
 
     [ObservableProperty]
     private bool _isSearchAvailable;
 
-    private readonly Dictionary<uint, SteamGameInfo> _gamesCache;
+    private readonly Dictionary<uint, SteamApp> _gamesCache;
     private readonly WeakReferenceMessenger _messenger;
     private readonly ISteamService _steamService;
     private readonly IDispatcherQueueService _dispatcherQueue;
@@ -22,7 +22,7 @@ public sealed partial class GamePickerPageViewModel : ObservableObject, IRecipie
         _dispatcherQueue = dispatcherQueue;
 
         _messenger.RegisterAll(this);
-        Games = new ObservableCollection<SteamGameInfo>();
+        Games = new ObservableCollection<SteamApp>();
     }
 
     public void Dispose()
@@ -41,7 +41,7 @@ public sealed partial class GamePickerPageViewModel : ObservableObject, IRecipie
         Task.Run(LoadGamesAsync);
     }
 
-    public void SelectGame(SteamGameInfo game)
+    public void SelectGame(SteamApp game)
     {
         _messenger.Send(new GameSelectedMessage(game));
     }
@@ -53,13 +53,13 @@ public sealed partial class GamePickerPageViewModel : ObservableObject, IRecipie
 
         _searchTokenSource = new CancellationTokenSource();
 
-        Games = new ObservableCollection<SteamGameInfo>();
+        Games = new ObservableCollection<SteamApp>();
         return Task.Run(() => SearchAsync(query, _searchTokenSource.Token));
     }
 
     private async ValueTask LoadGamesAsync()
     {
-        await foreach (SteamGameInfo steamGame in _steamService.GetAllGamesAsync().ConfigureAwait(false))
+        await foreach (SteamApp steamGame in _steamService.GetAllGamesAsync().ConfigureAwait(false))
         {
             _gamesCache.TryAdd(steamGame.Id, steamGame);
 
@@ -71,7 +71,7 @@ public sealed partial class GamePickerPageViewModel : ObservableObject, IRecipie
 
     private async Task SearchAsync(string? query, CancellationToken cancellationToken = default)
     {
-        foreach (SteamGameInfo item in BuildSearchQuery(query))
+        foreach (SteamApp item in BuildSearchQuery(query))
         {
             if (cancellationToken.IsCancellationRequested) return;
 
@@ -79,9 +79,9 @@ public sealed partial class GamePickerPageViewModel : ObservableObject, IRecipie
         }
     }
 
-    private IEnumerable<SteamGameInfo> BuildSearchQuery(string? query)
+    private IEnumerable<SteamApp> BuildSearchQuery(string? query)
     {
-        IEnumerable<SteamGameInfo> gamesQuery = _gamesCache.Values;
+        IEnumerable<SteamApp> gamesQuery = _gamesCache.Values;
 
         if (query is not null)
         {

@@ -1,4 +1,4 @@
 ﻿namespace SamEleven.App.Caching;
 
-[JsonSerializable(typeof(SteamGameInfo[]))]
+[JsonSerializable(typeof(List<SteamApp>))]
 internal partial class FileCacheJsonContext : JsonSerializerContext;

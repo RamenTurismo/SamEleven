@@ -6,7 +6,7 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable,
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsAnyGameSelected))]
-    private SteamGameInfo? _steamGameInfo;
+    private SteamApp? _steamGameInfo;
 
     private readonly WeakReferenceMessenger _messenger;
     private readonly INavigationService _navigationService;

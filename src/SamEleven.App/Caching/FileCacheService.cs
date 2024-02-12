@@ -1,6 +1,6 @@
 ﻿namespace SamEleven.App.Caching;
 
-internal sealed class FileCacheService
+internal sealed class FileCacheService : IFileCacheService
 {
     private readonly FileCacheServiceOptions _options;
     private readonly JsonSerializerOptions _serializerOptions;
@@ -16,16 +16,20 @@ internal sealed class FileCacheService
         };
     }
 
-    public ValueTask<T?> GetAsync<T>(string path, CancellationToken cancellationToken = default)
+    public async ValueTask<T?> GetAsync<T>(string path, CancellationToken cancellationToken = default)
     {
-        using StreamReader reader = new(GetPath(path), Encoding.UTF8);
-        return JsonSerializer.DeserializeAsync<T>(reader.BaseStream, _serializerOptions, cancellationToken);
+        string fullPath = GetPath(path);
+
+        if (!File.Exists(fullPath)) return default;
+
+        using FileStream reader = File.OpenRead(fullPath);
+        return await JsonSerializer.DeserializeAsync<T>(reader, _serializerOptions, cancellationToken).ConfigureAwait(false);
     }
 
-    public Task SaveAsync<T>(string path, T value, CancellationToken cancellationToken = default)
+    public async Task SaveAsync<T>(string path, T value, CancellationToken cancellationToken = default)
     {
-        using StreamWriter reader = new(GetPath(path), append: false, Encoding.UTF8);
-        return JsonSerializer.SerializeAsync(reader.BaseStream, value, _serializerOptions, cancellationToken);
+        using FileStream reader = File.OpenWrite(GetPath(path));
+        await JsonSerializer.SerializeAsync(reader, value, _serializerOptions, cancellationToken).ConfigureAwait(false);
     }
 
     private string GetPath(string path) => Path.Combine(_options.RootPath, path);

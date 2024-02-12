@@ -1,4 +1,6 @@
-﻿namespace SamEleven.App;
+﻿using SamEleven.App.Caching;
+
+namespace SamEleven.App;
 
 public partial class App : Application
 {
@@ -30,7 +32,9 @@ public partial class App : Application
         services.AddLogging(builder =>
         {
             builder.AddConfiguration(configuration.GetSection("Logging"));
+#if DEBUG
             builder.AddDebug();
+#endif
         });
 
         services.AddSingleton(configuration);
@@ -40,6 +44,10 @@ public partial class App : Application
 
         services.AddSingleton<ISteamClientManager, SteamClientManager>();
         services.AddSingleton<ISteamService, SteamService>();
+        services.AddFileCacheService(o =>
+        {
+            o.RootPath = Directory.GetCurrentDirectory();
+        });
 
         services.AddSingleton(_ => new WeakReferenceMessenger());
 

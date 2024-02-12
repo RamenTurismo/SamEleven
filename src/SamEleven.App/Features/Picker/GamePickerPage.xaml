@@ -18,7 +18,7 @@
 
     <Grid>
         <Grid.Resources>
-            <DataTemplate x:Key="GameDataTemplate" x:DataType="steam:SteamGameInfo">
+            <DataTemplate x:Key="GameDataTemplate" x:DataType="steam:SteamApp">
                 <Grid
                     Width="300"
                     Height="120"

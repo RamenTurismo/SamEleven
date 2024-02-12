@@ -1,4 +1,6 @@
 ﻿namespace SamEleven.App.Caching;
 
-internal record class FileCacheServiceOptions(
-    string RootPath);
+internal sealed class FileCacheServiceOptions
+{
+    public required string RootPath { get; set; }
+}
