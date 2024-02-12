@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-using Microsoft.UI.Xaml.Controls;
-using SamEleven.App.Steam.Models;
-
-namespace SamEleven.App.Picker;
+namespace SamEleven.App.Features.Picker;
 
 public sealed partial class GamePicker : UserControl
 {
@@ -21,7 +18,7 @@ public sealed partial class GamePicker : UserControl
     {
         if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
         {
-            _viewModel.Search(sender.Text);
+            _viewModel.SearchAsync(sender.Text);
         }
     }
 
@@ -33,7 +30,7 @@ public sealed partial class GamePicker : UserControl
         }
         else
         {
-            _viewModel.Search(args.QueryText);
+            _viewModel.SearchAsync(args.QueryText);
         }
     }
 
@@ -53,5 +50,10 @@ public sealed partial class GamePicker : UserControl
         {
             _viewModel.SelectGame(searchItem);
         }
+    }
+
+    private void Image_ImageFailed(object sender, ExceptionRoutedEventArgs e)
+    {
+
     }
 }

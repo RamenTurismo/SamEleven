@@ -2,8 +2,8 @@
 
 public interface ISteamApps
 {
-    string GetAppData(uint appId, string key);
-    string GetAppLogo(uint appId);
-    string GetAppName(uint appId);
+    Result<string> GetAppData(uint appId, string key);
+    Result<string> GetAppLogo(uint appId);
+    Result<string> GetAppName(uint appId);
     bool IsSubscribedApp(uint appId);
 }

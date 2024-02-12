@@ -1,9 +1,4 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using SamEleven.App.Achievement;
-using SamEleven.App.Picker;
-
-namespace SamEleven.App;
+﻿namespace SamEleven.App;
 
 public sealed partial class MainWindow : Window
 {

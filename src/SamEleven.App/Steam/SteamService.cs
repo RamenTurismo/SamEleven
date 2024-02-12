@@ -49,10 +49,6 @@ internal sealed partial class SteamService : ISteamService
 
     private Uri? BuildLogoUri(uint appId)
     {
-        Result<string> logo = _steamDesktop.GetAppLogo(appId);
-
-        if (logo.IsFailed) return null;
-
-        return new Uri($"https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/{appId}/{logo.Value}.jpg");
+        return new Uri($"https://cdn.cloudflare.steamstatic.com/steam/apps/{appId}/capsule_231x87.jpg");
     }
 }

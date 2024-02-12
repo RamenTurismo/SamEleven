@@ -3,7 +3,7 @@
 
 using Microsoft.UI.Xaml.Controls;
 
-namespace SamEleven.App.Achievement;
+namespace SamEleven.App.Features.Achievement;
 
 public sealed partial class AchievementPage : Page
 {

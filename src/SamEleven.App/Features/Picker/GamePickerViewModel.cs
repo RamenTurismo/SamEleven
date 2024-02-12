@@ -1,23 +1,26 @@
-﻿namespace SamEleven.App.Picker;
+﻿namespace SamEleven.App.Features.Picker;
 
 public sealed partial class GamePickerViewModel : ObservableObject, IDisposable
 {
     [ObservableProperty]
     private ObservableCollection<SteamGameInfo> _games;
 
+    [ObservableProperty]
+    private bool _isSearchAvailable;
+
     private readonly Dictionary<uint, SteamGameInfo> _gamesCache;
     private readonly WeakReferenceMessenger _messenger;
     private readonly ISteamService _steamService;
-    private readonly TaskScheduler _taskScheduler;
+    private readonly IDispatcherQueueService _dispatcherQueue;
     private CancellationTokenSource? _searchTokenSource;
 
-    public GamePickerViewModel(WeakReferenceMessenger messenger, ISteamService steamService)
+    public GamePickerViewModel(WeakReferenceMessenger messenger, ISteamService steamService, IDispatcherQueueService dispatcherQueue)
     {
         Games = new ObservableCollection<SteamGameInfo>();
         _gamesCache = [];
         _messenger = messenger;
         _steamService = steamService;
-        _taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+        _dispatcherQueue = dispatcherQueue;
     }
 
     internal async Task InitializeAsync()
@@ -27,12 +30,14 @@ public sealed partial class GamePickerViewModel : ObservableObject, IDisposable
 
     private async ValueTask LoadGamesAsync()
     {
-        await foreach (SteamGameInfo steamGame in _steamService.GetAllGamesAsync().ConfigureAwait(true))
+        await foreach (SteamGameInfo steamGame in _steamService.GetAllGamesAsync().ConfigureAwait(false))
         {
             _gamesCache.TryAdd(steamGame.Id, steamGame);
 
-            _ = Task.Factory.StartNew(() => Games.Add(steamGame), default, TaskCreationOptions.None, _taskScheduler);
+            await _dispatcherQueue.Enqueue(() => Games.Add(steamGame)).ConfigureAwait(false);
         }
+
+        await _dispatcherQueue.Enqueue(() => IsSearchAvailable = true).ConfigureAwait(false);
     }
 
     public void SelectGame(SteamGameInfo game)
@@ -40,20 +45,29 @@ public sealed partial class GamePickerViewModel : ObservableObject, IDisposable
         _messenger.Send(new GameSelectedMessage(game));
     }
 
-    public void Search(string? query)
+    public Task SearchAsync(string? query)
     {
         _searchTokenSource?.Cancel();
         _searchTokenSource?.Dispose();
 
         _searchTokenSource = new CancellationTokenSource();
 
-        Search(query, _searchTokenSource.Token);
+        Games = new ObservableCollection<SteamGameInfo>();
+        return Task.Run(() => SearchAsync(query, _searchTokenSource.Token));
     }
 
-    private void Search(string? query, CancellationToken cancellationToken)
+    private async Task SearchAsync(string? query, CancellationToken cancellationToken = default)
     {
-        if (cancellationToken.IsCancellationRequested) return;
+        foreach (SteamGameInfo item in BuildSearchQuery(query))
+        {
+            if (cancellationToken.IsCancellationRequested) return;
 
+            await _dispatcherQueue.Enqueue(() => Games.Add(item), cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private IEnumerable<SteamGameInfo> BuildSearchQuery(string? query)
+    {
         IEnumerable<SteamGameInfo> gamesQuery = _gamesCache.Values;
 
         if (query is not null)
@@ -61,16 +75,7 @@ public sealed partial class GamePickerViewModel : ObservableObject, IDisposable
             gamesQuery = gamesQuery.Where(game => game.Name.Contains(query, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        if (cancellationToken.IsCancellationRequested) return;
-
-        Games = new ObservableCollection<SteamGameInfo>();
-
-        foreach (SteamGameInfo item in gamesQuery)
-        {
-            if (cancellationToken.IsCancellationRequested) return;
-
-            Games.Add(item);
-        }
+        return gamesQuery;
     }
 
     public void Dispose()

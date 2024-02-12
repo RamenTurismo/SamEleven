@@ -46,6 +46,8 @@ public partial class App : Application
         services.AddSingleton<GamePickerViewModel>();
         services.AddSingleton<MainWindowViewModel>();
 
+        services.AddDispatcherQueueService();
+
         _provider = services.BuildServiceProvider(new ServiceProviderOptions
         {
 #if DEBUG
@@ -77,7 +79,7 @@ public partial class App : Application
         MainWindowViewModel mainWindowViewModel = Services.GetRequiredService<MainWindowViewModel>();
         mainWindowViewModel.Initialize();
 
-        MainWindow window = new(mainWindowViewModel, new Microsoft.UI.Xaml.Controls.Frame(), gamePickerViewModel);
+        MainWindow window = new(mainWindowViewModel, new Frame(), gamePickerViewModel);
         window.Closed += WindowClosed;
         window.Activate();
 

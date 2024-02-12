@@ -20,7 +20,7 @@ internal sealed class SteamApps : ISteamApps
         return _wrapper008.GetDelegate<IsSubscribedApp>(v => v.IsSubscribedApp)(_wrapper008.InterfaceHandle, appId);
     }
 
-    public string GetAppData(uint appId, string key)
+    public Result<string> GetAppData(uint appId, string key)
     {
         const int valueLength = 1024;
 
@@ -29,10 +29,12 @@ internal sealed class SteamApps : ISteamApps
 
         int result = _wrapper001.GetDelegate<GetAppData>(v => v.GetAppData)(_wrapper001.InterfaceHandle, appId, _bindingStringBuilder, _valueStringBuilder, valueLength);
 
+        if (result <= 0) return Result.Fail(new AppDataNotFound(appId, key, result));
+
         return _valueStringBuilder.ToString();
     }
 
-    public string GetAppName(uint appId) => GetAppData(appId, "name");
+    public Result<string> GetAppName(uint appId) => GetAppData(appId, "name");
 
-    public string GetAppLogo(uint appId) => GetAppData(appId, "logo");
+    public Result<string> GetAppLogo(uint appId) => GetAppData(appId, "logo");
 }

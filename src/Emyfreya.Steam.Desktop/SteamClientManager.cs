@@ -38,7 +38,7 @@ public sealed class SteamClientManager : ISteamClientManager
         return _client
             .Value
             .Bind(steamClient => steamClient.SteamApps)
-            .Bind<string>(steamApps => steamApps.GetAppName(appId));
+            .Bind(steamApps => steamApps.GetAppName(appId));
     }
 
     public Result<string> GetAppLogo(uint appId)
@@ -46,6 +46,6 @@ public sealed class SteamClientManager : ISteamClientManager
         return _client
             .Value
             .Bind(steamClient => steamClient.SteamApps)
-            .Bind<string>(steamApps => steamApps.GetAppLogo(appId));
+            .Bind(steamApps => steamApps.GetAppLogo(appId));
     }
 }
